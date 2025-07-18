@@ -64,7 +64,6 @@ impl Flags {
     const TC: u16 = 1 << 9; // Truncation
     const RD: u16 = 1 << 8; // Recursion Desired
     const RA: u16 = 1 << 7; // Recursion Available
-    const Z: u16 = 0x70; // Reserved (3 bits)
     const RCODE: u16 = 0x0F; // Response code (4 bits)
 
     /// Creates flags with all bits set to zero.
@@ -83,7 +82,7 @@ impl Flags {
 
     /// Sets the operation code (0=standard query, 1=inverse query, 2=status).
     pub fn set_opcode(&mut self, opcode: u8) {
-        self.0 = (self.0 & !Self::OPCODE) | ((opcode as u16 & 0xF) << 11);
+        self.0 = (self.0 & !Self::OPCODE) | (((opcode as u16) << 11) & Self::OPCODE);
     }
 
     /// Sets the Authoritative Answer flag.
@@ -122,14 +121,9 @@ impl Flags {
         }
     }
 
-    /// Sets reserved bits (should be zero per RFC 1035).
-    pub fn set_z(&mut self, reserved: u8) {
-        self.0 = (self.0 & !Self::Z) | ((reserved as u16 & 0x7) << 4);
-    }
-
     /// Sets the response code (0=no error, 1=format error, 2=server failure, etc.).
     pub fn set_rcode(&mut self, rcode: u8) {
-        self.0 = (self.0 & !Self::RCODE) | (rcode as u16 & 0xF);
+        self.0 = (self.0 & !Self::RCODE) | (rcode as u16 & Self::RCODE);
     }
 
     /// Converts flags to big-endian byte array for network transmission.
