@@ -1,6 +1,6 @@
 use std::net::UdpSocket;
 
-use codecrafters_dns_server::dns::Message;
+use codecrafters_dns_server::dns::{Message, Response};
 
 fn main() {
     println!("DNS server starting on 127.0.0.1:2053");
@@ -13,7 +13,7 @@ fn main() {
             Ok((size, src)) => {
                 println!("Received {size} bytes from {src}");
 
-                let response_message = Message::new();
+                let response_message = Message::<Response>::new(1234);
 
                 let response_bytes = response_message.to_bytes();
                 socket

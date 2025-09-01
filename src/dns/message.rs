@@ -1,32 +1,28 @@
-use super::header::Header;
+use super::{header::Header, Response};
 
 /// The DNS protocol uses two types of DNS messages, queries and responses; both have the same format.
 /// Each message consists of a header and four sections: question, answer, authority, and an additional space.
 /// A header field (flags) controls the content of these four sections.
 #[derive(Debug, Clone, Copy)]
-pub struct Message {
-    header: Header,
+pub struct Message<Dir> {
+    header: Header<Dir>,
     // question: Question,
     // answer: Answer,
     // authority: Authority,
     // addition: Addition,
 }
 
-impl Message {
-    pub fn new() -> Self {
+impl Message<Response> {
+    /// Create a new response message with the given ID.
+    pub fn new(id: u16) -> Self {
         Message {
-            header: Header::response(1234),
+            header: Header::response(id),
         }
-    }
-
-    /// Serialize into a 12-byte array (big-endian/u16 network order)
-    pub fn to_bytes(&self) -> [u8; Header::SIZE] {
-        self.header.to_bytes()
     }
 }
 
-impl Default for Message {
-    fn default() -> Self {
-        Self::new()
+impl<Dir> Message<Dir> {
+    pub fn to_bytes(&self) -> [u8; 12] {
+        self.header.to_bytes()
     }
 }
