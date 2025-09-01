@@ -1,3 +1,1 @@
-mod dns_header;
-
-pub use dns_header::DNSHeader;
+pub mod dns;
