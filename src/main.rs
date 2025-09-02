@@ -1,6 +1,8 @@
 use std::net::UdpSocket;
 
-use codecrafters_dns_server::dns::{Message, QClass, QType, Question};
+use codecrafters_dns_server::dns::{
+    DomainName, Message, QClass, QType, Question, RClass, RType, ResourceRecord,
+};
 
 fn main() {
     println!("DNS server starting on 127.0.0.1:2053");
@@ -13,8 +15,16 @@ fn main() {
             Ok((size, src)) => {
                 println!("Received {size} bytes from {src}");
 
-                let question = vec![Question::new("codecrafters.io", QType::A, QClass::IN)];
-                let response_message = Message::response(1234, question);
+                let domain = "codecrafters.io".parse::<DomainName>().unwrap();
+                let question = vec![Question::new(domain.clone(), QType::A, QClass::IN)];
+                let answer = vec![ResourceRecord::new(
+                    domain,
+                    RType::A,
+                    RClass::IN,
+                    3600,
+                    vec![127, 0, 0, 1],
+                )];
+                let response_message = Message::response(1234, question, answer);
 
                 let response_bytes = response_message.to_be_bytes();
                 socket
