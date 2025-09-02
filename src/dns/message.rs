@@ -55,11 +55,8 @@ mod tests {
     #[test]
     fn valid_one_question_response_message() {
         let domain = "google.com".parse::<DomainName>().unwrap();
-        let message = Message::response(
-            1,
-            vec![Question::new(domain, QType::CNAME, QClass::IN)],
-            vec![],
-        );
+        let question = Question::new(domain, QType::CNAME, QClass::IN);
+        let message = Message::response(1, vec![question], vec![]);
         let bytes = message.to_be_bytes();
         insta::assert_snapshot!(format!("{:02x?}", &bytes), @"[00, 01, 80, 00, 00, 01, 00, 00, 00, 00, 00, 00, 06, 67, 6f, 6f, 67, 6c, 65, 03, 63, 6f, 6d, 00, 00, 05, 00, 01]");
     }
