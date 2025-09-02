@@ -32,6 +32,8 @@ impl<Dir> Message<Dir> {
 
 #[cfg(test)]
 mod tests {
+    use crate::dns::question::{QClass, QType};
+
     use super::*;
 
     #[test]
@@ -43,7 +45,10 @@ mod tests {
 
     #[test]
     fn test_response_message_to_be_bytes() {
-        let message = Message::response(1, vec![Question::new("google.com", 5, 1)]);
+        let message = Message::response(
+            1,
+            vec![Question::new("google.com", QType::CNAME, QClass::IN)],
+        );
         let bytes = message.to_be_bytes();
         insta::assert_snapshot!(format!("{:02x?}", &bytes), @"[00, 01, 80, 00, 00, 01, 00, 00, 00, 00, 00, 00, 06, 67, 6f, 6f, 67, 6c, 65, 03, 63, 6f, 6d, 00, 00, 05, 00, 01]");
     }

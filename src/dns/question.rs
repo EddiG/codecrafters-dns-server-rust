@@ -1,12 +1,35 @@
+#[derive(Debug, Clone, Copy)]
+pub enum QType {
+    A = 1,
+    CNAME = 5,
+}
+
+impl QType {
+    pub fn to_be_bytes(&self) -> [u8; 2] {
+        (*self as u16).to_be_bytes()
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum QClass {
+    IN = 1,
+}
+
+impl QClass {
+    pub fn to_be_bytes(&self) -> [u8; 2] {
+        (*self as u16).to_be_bytes()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Question {
     qname: Vec<u8>,
-    qtype: u16,
-    qclass: u16,
+    qtype: QType,
+    qclass: QClass,
 }
 
 impl Question {
-    pub fn new(name: &str, qtype: u16, qclass: u16) -> Self {
+    pub fn new(name: &str, qtype: QType, qclass: QClass) -> Self {
         // Labels are encoded as <length><content>, where <length> is a single byte that specifies the length of the label,
         // and <content> is the actual content of the label. The sequence of labels is terminated by a null byte (\x00).
         let mut qname = Vec::with_capacity(name.len() + name.matches('.').count() + 1);
@@ -35,11 +58,11 @@ impl Question {
 
 #[cfg(test)]
 mod tests {
-    use super::Question;
+    use super::*;
 
     #[test]
     fn test_to_be_bytes() {
-        let question = Question::new("google.com", 5, 1);
+        let question = Question::new("google.com", QType::CNAME, QClass::IN);
         let bytes = question.to_be_bytes();
         assert_eq!(
             bytes,
