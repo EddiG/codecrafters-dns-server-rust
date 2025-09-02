@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 /// The DNS header's flags
 #[derive(Debug, Clone, Copy)]
-pub struct Flags<Dir>(u16, PhantomData<Dir>);
+pub(super) struct Flags<Dir>(u16, PhantomData<Dir>);
 
 impl Flags<Response> {
     pub fn new() -> Self {
